@@ -172,15 +172,15 @@ public class MaterialCalendarView extends ViewGroup {
   private static final int DEFAULT_MAX_WEEKS = 6;
   private static final int DAY_NAMES_ROW = 1;
 
-  private final TitleChanger titleChanger;
+  protected final TitleChanger titleChanger;
 
   private final TextView title;
   private final ImageView buttonPast;
   private final ImageView buttonFuture;
-  private final CalendarPager pager;
-  private CalendarPagerAdapter<?> adapter;
-  private CalendarDay currentMonth;
-  private LinearLayout topbar;
+  protected final CalendarPager pager;
+  protected CalendarPagerAdapter<?> adapter;
+  protected CalendarDay currentMonth;
+  private CalendarTopbar topbar;
   private CalendarMode calendarMode;
   /**
    * Used for the dynamic calendar height.
@@ -200,25 +200,26 @@ public class MaterialCalendarView extends ViewGroup {
     }
   };
 
-  private final ViewPager.OnPageChangeListener pageChangeListener =
-      new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageSelected(int position) {
-          titleChanger.setPreviousMonth(currentMonth);
-          currentMonth = adapter.getItem(position);
-          updateUi();
+  protected ViewPager.OnPageChangeListener getPageChangeListener(){
+    return new ViewPager.OnPageChangeListener() {
+      @Override
+      public void onPageSelected(int position) {
+        titleChanger.setPreviousMonth(currentMonth);
+        currentMonth = adapter.getItem(position);
+        updateUi();
 
-          dispatchOnMonthChanged(currentMonth);
-        }
+        dispatchOnMonthChanged(currentMonth);
+      }
 
-        @Override
-        public void onPageScrollStateChanged(int state) {
-        }
+      @Override
+      public void onPageScrollStateChanged(int state) {
+      }
 
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        }
-      };
+      @Override
+      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+      }
+    };
+  }
 
   private CalendarDay minDate = null;
   private CalendarDay maxDate = null;
@@ -259,12 +260,12 @@ public class MaterialCalendarView extends ViewGroup {
 
     final LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Service.LAYOUT_INFLATER_SERVICE);
-    final View content = inflater.inflate(R.layout.calendar_view, null, false);
+    final View content = inflater.inflate(R.layout.calendar_view_topbar, null, false);
 
     topbar = content.findViewById(R.id.header);
-    buttonPast = content.findViewById(R.id.previous);
-    title = content.findViewById(R.id.month_name);
-    buttonFuture = content.findViewById(R.id.next);
+    buttonPast = topbar.findViewById(R.id.previous);
+    title = topbar.findViewById(R.id.month_name);
+    buttonFuture = topbar.findViewById(R.id.next);
     pager = new CalendarPager(getContext());
 
     buttonPast.setOnClickListener(onClickListener);
@@ -272,7 +273,7 @@ public class MaterialCalendarView extends ViewGroup {
 
     titleChanger = new TitleChanger(title);
 
-    pager.setOnPageChangeListener(pageChangeListener);
+    pager.setOnPageChangeListener(getPageChangeListener());
     pager.setPageTransformer(false, new ViewPager.PageTransformer() {
       @Override
       public void transformPage(View page, float position) {
@@ -345,13 +346,13 @@ public class MaterialCalendarView extends ViewGroup {
       setLeftArrow(
           a.getResourceId(
               R.styleable.MaterialCalendarView_mcv_leftArrowMask,
-              R.drawable.arrow_small_left_default
+              R.drawable.mcv_action_previous
           )
       );
       setRightArrow(
           a.getResourceId(
               R.styleable.MaterialCalendarView_mcv_rightArrowMask,
-              R.drawable.arrow_small_right_default
+              R.drawable.mcv_action_next
           )
       );
 
@@ -418,7 +419,7 @@ public class MaterialCalendarView extends ViewGroup {
   }
 
   private void setupChildren() {
-    addView(topbar, new LayoutParams(1));
+    addView(topbar);
 
     pager.setId(R.id.mcv_pager);
     pager.setOffscreenPageLimit(1);
@@ -427,7 +428,7 @@ public class MaterialCalendarView extends ViewGroup {
     addView(pager, new LayoutParams(tileHeight));
   }
 
-  private void updateUi() {
+  protected void updateUi() {
     titleChanger.change(currentMonth);
     enableView(buttonPast, canGoBack());
     enableView(buttonFuture, canGoForward());
