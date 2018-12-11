@@ -64,7 +64,7 @@ public class TitleChanger {
     doChange(currentTime, currentMonth, true);
   }
 
-  private void doChange(final long now, final CalendarDay currentMonth, boolean animate) {
+  protected void doChange(final long now, final CalendarDay currentMonth, boolean animate) {
 
     title.animate().cancel();
     doTranslation(title, 0);
