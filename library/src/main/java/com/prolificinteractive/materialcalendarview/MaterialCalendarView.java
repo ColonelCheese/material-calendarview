@@ -345,13 +345,13 @@ public class MaterialCalendarView extends ViewGroup {
       setLeftArrow(
           a.getResourceId(
               R.styleable.MaterialCalendarView_mcv_leftArrowMask,
-              R.drawable.mcv_action_previous
+              R.drawable.arrow_small_left_default
           )
       );
       setRightArrow(
           a.getResourceId(
               R.styleable.MaterialCalendarView_mcv_rightArrowMask,
-              R.drawable.mcv_action_next
+              R.drawable.arrow_small_right_default
           )
       );
 
@@ -418,7 +418,7 @@ public class MaterialCalendarView extends ViewGroup {
   }
 
   private void setupChildren() {
-    addView(topbar);
+    addView(topbar, new LayoutParams(1));
 
     pager.setId(R.id.mcv_pager);
     pager.setOffscreenPageLimit(1);
